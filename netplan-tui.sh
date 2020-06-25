@@ -20,7 +20,7 @@ case $? in
 	device=$(dialog --title "Netplan TUI" --backtitle "Netplan TUI" \
 		 --inputbox "Device: " 8 60 \
 	 3>&1 1>&2 2>&3 3>&-)
-	echo -e "network:\n\t version: 2\n\t renderer: networkd\n\t ethernets:\n\t\t $device:\n\t\t dhcp4: true" > $filename && clear && echo "Sucessfully changed Network Settings!" && exit;;
+	echo -e "network:\n\t version: 2\n\t renderer: networkd\n\t ethernets:\n\t\t $device:\n\t\t dhcp4: true" > /etc/netplan/$filename && netplan apply && clear && echo "Sucessfully changed Network Settings!" && exit;;
 
 	1)
 	 dhcp="no";;
@@ -46,9 +46,6 @@ VALUES=$(dialog --ok-label "Submit" \
  #close fd
 exec 3>&-
 
-# display values just entered
-#echo "$VALUES"
-
 clear
 
 ipaddr=`echo $VALUES | cut -d ' ' -f 1`
@@ -56,11 +53,9 @@ dgateway=`echo $VALUES | cut -d ' ' -f 2`
 ddns=`echo $VALUES | cut -d ' ' -f 3`
 ddevice=`echo $VALUES | cut -d ' ' -f 4`
 
-#echo $ipaddr
-
 # Write to file
 
-echo -e "network:\n\t version: 2\n\t renderer: networkd\n\t ethernets:\n\t\t $ddevice:\n\t\t dhcp4: $dhcp\n\t\t addresses:\n\t\t\t - $ipaddr\n\t\t gateway4: $dgateway\n\t\t nameservers:\n\t\t\t addresses: [$ddns]" > $filename
+echo -e "network:\n\t version: 2\n\t renderer: networkd\n\t ethernets:\n\t\t $ddevice:\n\t\t dhcp4: $dhcp\n\t\t addresses:\n\t\t\t - $ipaddr\n\t\t gateway4: $dgateway\n\t\t nameservers:\n\t\t\t addresses: [$ddns]" > /etc/netplan/$filename
 
-
+netplan apply
 echo "Sucessfully changed Network Config!"
